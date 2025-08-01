@@ -64,6 +64,66 @@ export class Service{
             throw err;
         }
     }
+
+     async getPost(slug){
+        try{
+            return await this.databases.getDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                 slug 
+        )
+        return true;
+        }catch(err){
+            throw err;
+        }
+    }
+
+     async getPost(queries = [Query.equal("status","active")]){
+        try{
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                 queries
+        )
+        return true;
+        }catch(err){
+            throw err;
+        }
+    }
+
+
+    // File upload services
+
+    async uploadFile(file){
+        try{
+             await this.storage.createFile(
+                conf.appwriteBucketId,
+                ID.unique(),
+                file
+            )
+        }catch(err){
+            throw err;
+        }
+    }
+
+     async deleteFile(fileId){
+        try{
+             await this.storage.deleteFile(
+                conf.appwriteBucketId,
+                fileId
+            )
+            return true
+        }catch(err){
+            throw err;
+        }
+    }
+
+    getFilePreview(fileId){
+        return this.storage.getFilePreview(
+            conf.appwriteBucketId,
+            fileId
+        )
+    }
 }
 
    

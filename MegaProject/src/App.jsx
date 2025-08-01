@@ -1,14 +1,32 @@
+import { useEffect, useState } from 'react'
 import './App.css'
+import { useDispatch } from 'react-redux';
+import authService from './appwrite/auth'
+import {login,logout} from './store/authSlice'
 
 function App() {
-  
-      console.log(import.meta.env.VITE_APPWRITE_URL)
+  const [loading,setLoading]= useState();
+  const dispatch = useDispatch;
+
+  useEffect(()=>{
+    authService.getCurrentUser()
+    .then((userData)=>{
+      if(userData){
+      dispatch(login({userData}))
+      }
+      else{
+        dispatch(logout())
+      }
+    })
+    .finally(()=>{setLoading(false)})
+  })
+
       
-  return (
-    <>
-      <h1 className='bg-blue-900 text-4xl'>Hey its mayur</h1>
-    </>
-  )
+  return !loading ? (
+    <div className='min-h-c'>
+
+    </div>
+  ) : null
 }
 
 export default App
