@@ -6,9 +6,13 @@ export class AuthService{
     account;
 
     constructor(){
+
+         console.log("Appwrite URL:", conf.AppwriteUrl);
+         console.log("Appwrite Project ID:", conf.AppwriteProjectId);
+    
         this.client
             .setEndpoint(conf.AppwriteUrl)
-            .setProject(conf.ProjectId)
+            .setProject(conf.AppwriteProjectId)
         this.account = new Account(this.client)
     }
 
