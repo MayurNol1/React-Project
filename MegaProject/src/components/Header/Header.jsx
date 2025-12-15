@@ -1,15 +1,14 @@
 import React from 'react'
-import { Link } from 'react-router'
-import {Logo,LogoutBtn,Container} from '../index'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-
+import {Container, Logo, LogoutBtn} from '../index'
+import { Link } from 'react-router-dom'
+import {useSelector} from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 function Header() {
-     const authStatus = useSelector((state) => state.auth.status)
-     const navigate = useNavigate()
+  const authStatus = useSelector((state) => state.auth.status)
+  const navigate = useNavigate()
 
-     const navItems = [
+  const navItems = [
     {
       name: 'Home',
       slug: "/",
@@ -43,8 +42,8 @@ function Header() {
       <Container>
         <nav className='flex'>
           <div className='mr-4'>
-            <Link to='/'>
-              <Logo width='70px'   />
+            <Link to='\'>
+              <img src="..\..\..\public\logo.png" width="70px"/>
 
               </Link>
           </div>

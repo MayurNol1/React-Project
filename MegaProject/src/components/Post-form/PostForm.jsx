@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Input, RTE, Select } from "../index";
+import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function PostForm({ post }) {
@@ -14,40 +14,42 @@ export default function PostForm({ post }) {
             status: post?.status || "active",
         },
     });
+    
 
     const navigate = useNavigate();
-    const userData = useSelector((state) => state.auth.userData);
+    const { userData, status } = useSelector((state) => state.auth);
+
+if (!status) {
+  return <p className="text-center mt-10">Checking authentication...</p>;
+}
+
+    console.log("userData from redux:", userData);
 
     const submit = async (data) => {
-        if (post) {
-            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
+  if (!userData) {
+    alert("You must be logged in to create a post");
+    return;
+  }
 
-            if (file) {
-                appwriteService.deleteFile(post.featuredImage);
-            }
+  let fileId = null;
 
-            const dbPost = await appwriteService.updatePost(post.$id, {
-                ...data,
-                featuredImage: file ? file.$id : undefined,
-            });
+  if (data.image && data.image[0]) {
+    const file = await appwriteService.uploadFile(data.image[0]);
+    fileId = file ? file.$id : null;
+  }
 
-            if (dbPost) {
-                navigate(`/post/${dbPost.$id}`);
-            }
-        } else {
-            const file = await appwriteService.uploadFile(data.image[0]);
+  const dbPost = await appwriteService.createPost({
+    ...data,
+    featuredImage: fileId,
+    userId: userData.$id,
+  });
 
-            if (file) {
-                const fileId = file.$id;
-                data.featuredImage = fileId;
-                const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
+  if (dbPost) {
+    navigate(`/post/${dbPost.$id}`);
+  }
+};
 
-                if (dbPost) {
-                    navigate(`/post/${dbPost.$id}`);
-                }
-            }
-        }
-    };
+
 
     const slugTransform = useCallback((value) => {
         if (value && typeof value === "string")
@@ -101,7 +103,7 @@ export default function PostForm({ post }) {
                 {post && (
                     <div className="w-full mb-4">
                         <img
-                            src={appwriteService.getFilePreview(post.featuredImage)}
+                            src={appwriteService.getFileView(post.featuredImage)}
                             alt={post.title}
                             className="rounded-lg"
                         />
